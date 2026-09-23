@@ -1,0 +1,31 @@
+.workflow{margin:0 0 24px;padding:18px;border:1px solid #e3e8ef;border-radius:10px;background:#fbfcfe}
+.workflow h3{margin:0 0 18px;font-size:16px}
+.workflowSteps{display:grid;grid-template-columns:repeat(5,minmax(112px,1fr));gap:0;overflow-x:auto;padding-bottom:4px}
+.workflowStep{position:relative;text-align:center;min-width:112px;color:#657386}
+.stepTop{height:50px;position:relative;display:flex;align-items:center;justify-content:center}
+.stepCircle{width:44px;height:44px;border:3px solid #657386;border-radius:50%;background:#fbfcfe;display:grid;place-items:center;position:relative;z-index:2;color:#657386}
+.stepCircle span{width:18px;height:18px;border:2px solid currentColor;border-radius:50%;display:block}
+.stepLine{position:absolute;left:-50%;right:50%;height:3px;background:#dbe2ea;top:24px;z-index:1}
+.workflowStep b{display:block;font-size:14px;line-height:1.25;margin-top:7px;color:#657386}
+.workflowStep small{display:block;font-size:11px;font-weight:750;margin-top:8px;color:#657386}
+.workflowStep.completed{color:#147f3f}
+.workflowStep.completed .stepCircle{border-color:#147f3f;color:#147f3f;background:#edf9f1}
+.workflowStep.completed b,.workflowStep.completed small{color:#147f3f}
+.workflowStep.pending{color:#b67413}
+.workflowStep.pending .stepCircle{border-color:#b67413;color:#b67413;background:#fff8ea}
+.workflowStep.pending b,.workflowStep.pending small{color:#b67413}
+.stepLine.lineDone{background:#147f3f}
+.workflowStop{margin-top:12px;padding:9px 11px;border-radius:8px;background:#fff3f3;color:#a62a32;font-weight:750;font-size:12px}
+@media(max-width:1050px){.workflowSteps{grid-template-columns:repeat(5,128px)}}
+.rowActions{display:flex;gap:8px;align-items:center;white-space:nowrap}
+.openBtn,.progressBtn{border:0;border-radius:8px;padding:8px 11px;font-weight:750;cursor:pointer;font-size:12px}
+.openBtn{background:#e9f2f8;color:#0c628a}
+.progressBtn{background:#0d83b8;color:white}
+.modalShade{position:fixed;inset:0;background:#0f172a88;z-index:30;display:grid;place-items:center;padding:28px}
+.progressModal{width:min(1080px,100%);max-height:90vh;overflow:auto;background:white;border-radius:16px;box-shadow:0 24px 70px #0006;padding:28px}
+.modalHead{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:22px}
+.modalHead h1{font-size:32px;margin:0 0 8px}
+.modalHead p{margin:0;color:#657386;font-size:17px}
+.closeBtn{border:1px solid #cfd8e3;background:white;border-radius:14px;padding:16px 26px;font-size:17px;font-weight:850;color:#1f2937;cursor:pointer}
+.closeBtn:hover{background:#f6f9fc}
+@media(max-width:700px){.modalShade{padding:14px}.progressModal{padding:20px;border-radius:12px}.modalHead{display:grid}.modalHead h1{font-size:26px}.closeBtn{width:100%;padding:13px}}

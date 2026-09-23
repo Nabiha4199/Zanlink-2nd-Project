@@ -1,4 +1,4 @@
-# ZanLink Project 2
+# ZanLink Customer Accounts
 
 Customer Account Change & Approval System. This is a separate project from the original ZanLink project.
 
