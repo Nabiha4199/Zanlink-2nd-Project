@@ -14,7 +14,7 @@ The request form includes customer/account information, service details, effecti
 
 ## Run the project
 
-### 1. Backend
+### 1. Backend (optional)
 ```powershell
 cd server
 python -m venv .venv
@@ -23,6 +23,8 @@ pip install -r requirements.txt
 python app.py
 ```
 Backend: http://localhost:5000
+
+The frontend now handles demo login, requests and approval history in browser `localStorage`. The backend is optional and only keeps lightweight demo user endpoints for development checks.
 
 ### 2. Frontend (new terminal)
 ```powershell
@@ -52,5 +54,5 @@ All passwords: `demo123`
 
 ## Notes
 - Uses React + Vite frontend and Flask backend.
-- Uses SQLite for local persistence (`server/zanlink_project_2.db`, created automatically).
+- Uses browser `localStorage` for request and approval history persistence.
 - This first version is intended for local development/prototyping. Production authentication, attachment storage, notifications and deployment configuration can be added next.
