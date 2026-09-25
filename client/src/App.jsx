@@ -1,6 +1,7 @@
 import React,{useEffect,useState}from'react';
 import DocumentForm from './DocumentForm';
 import {documentFacts} from './requestForms';
+import {downloadRequestsExcel} from './exportRequests';
 import{LayoutDashboard,FilePlus2,ClipboardList,LogOut,CheckCircle2,Clock3,XCircle,RotateCcw,Users,Wifi,Search,FileDown,Printer}from'lucide-react';
 
 const USERS=[
@@ -48,13 +49,7 @@ function NewRequest({user,onCreated}) {
 function Requests({rows,onOpen,onProgress}) {
   const [q,setQ]=useState('');
   const filtered=rows.filter(r=>`${r.customer_name||''} ${r.ref||''} ${r.request_type||''} ${r.status||''}`.toLowerCase().includes(q.toLowerCase()));
-  function exportExcel(){
-    const columns=['Request','Customer','Customer ID / Service No','Type','Change','Status','Created'];
-    const values=filtered.map(r=>[r.ref,r.customer_name,r.customer_id||r.service_no||r.radius_username,r.request_type,['Churn','On Hold','Disconnection'].includes(r.request_type)?`${r.request_type} / ${r.effective_date||'-'}`:`${r.current_capacity||'-'} to ${r.new_capacity||'-'}`,r.status,r.created_at?.slice(0,10)]);
-    const csv=[columns,...values].map(row=>row.map(value=>`"${String(value??'').replaceAll('\"','\"\"')}"`).join(',')).join('\r\n');
-    const blob=new Blob(['\ufeff',csv],{type:'text/csv;charset=utf-8'});
-    const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`ZanLink-Requests-${new Date().toISOString().slice(0,10)}.csv`;link.click();URL.revokeObjectURL(url);
-  }
+  function exportExcel(){downloadRequestsExcel(filtered,USERS);}
   return <div className="requestsPage"><header><div><h1>Requests</h1><p>Search and follow all customer account changes.</p></div></header><section className="panel"><div className="requestToolbar"><div className="search"><Search size={18}/><input placeholder="Search customer, request ID, type or status..."value={q}onChange={e=>setQ(e.target.value)}/></div><div className="requestTools"><button className="exportBtn"onClick={exportExcel}><FileDown size={17}/>Export to Excel</button><button className="printBtn"onClick={()=>window.print()}><Printer size={17}/>Print</button></div></div><RequestTable rows={filtered}onOpen={onOpen} onProgress={onProgress}/></section></div>;
 }
 
