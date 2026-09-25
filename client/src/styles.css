@@ -3,3 +3,4 @@
 .detailGridSingle{grid-template-columns:1fr}.approvalPanel{align-self:start}.approvalStage{margin:-8px 0 14px;color:#718096;font-size:13px}.approvalPanel textarea{min-height:80px;margin-bottom:10px}.approvalButtons{display:flex;gap:8px;flex-wrap:wrap}
 .documentForm{width:100%;max-width:none}
 .documentPicker{width:100%;max-width:none}.documentPicker h2{margin-bottom:14px}.documentTypeLabel{max-width:620px}.documentTypeSelect{min-height:46px;margin-top:3px}.documentTypeHelp{margin:10px 0 0;color:#718096;font-size:13px}
+.dashboardPanelHead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px}.dashboardPanelHead label{min-width:240px}.dashboardPanelHead select{margin-top:6px}@media(max-width:600px){.dashboardPanelHead{align-items:stretch;flex-direction:column}.dashboardPanelHead label{min-width:0}}
