@@ -4,7 +4,7 @@ import {FORM_SCHEMAS, requestTypes, initialForm, formPayload, validateForm} from
 function DocumentField({field, value, onChange, managers}) {
   const {key, label, type, required, options = []} = field;
   const id = `document-${key}`;
-  const caption = <>{label}{required && <span className="requiredMark"> *</span>}</>;
+  const caption = label;
   if (type === 'radio') return <fieldset className="documentRadio"><legend>{caption}</legend><div>{options.map(option =>
     <label key={option}><input type="radio" name={key} value={option} checked={value === option} required={required} onChange={() => onChange(option)}/>{option}</label>
   )}</div></fieldset>;
@@ -52,11 +52,10 @@ export default function DocumentForm({user, managers, onSubmit}) {
     catch {setError('The request could not be saved. Browser storage may be full; try removing attachments.');setSubmitting(false);}
   }
   return <><header><div><h1>New Customer Account Request</h1><p>Select a document to fill in its matching form.</p></div></header>
-    <section className="panel documentPicker"><h2>Document type</h2><div className="typeGrid">{requestTypes.map(item => <button type="button" key={item} disabled={reading || submitting} aria-pressed={type === item} className={type === item ? 'selected' : ''} onClick={() => {setType(item);setError('');}}>{FORM_SCHEMAS[item].title}</button>)}</div></section>
+    <section className="panel documentPicker" aria-labelledby="document-type-heading"><h2 id="document-type-heading">Choose a document type</h2><label className="documentTypeLabel" htmlFor="document-type">Select the document you need to submit<select id="document-type" className="documentTypeSelect" value={type} disabled={reading || submitting} onChange={e => {setType(e.target.value);setError('');}}>{requestTypes.map(item => <option key={item} value={item}>{FORM_SCHEMAS[item].title}</option>)}</select></label><p className="documentTypeHelp">The matching form will appear below.</p></section>
     <form className="panel documentForm" onSubmit={submit}>
-      <h2>{schema.title}</h2><p className="formHelp">Fields marked with an asterisk (*) are required.</p>
+      <h2>{schema.title}</h2>
       <div className="documentFields">{schema.fields.map(field => field.type === 'file' ? <div key={field.key} className="uploadField"><label htmlFor="document-attachments">{field.label}</label><input key={type} id="document-attachments" type="file" multiple disabled={reading} onChange={e => upload(e.target.files)}/><small>Files are saved in this browser with the request. Maximum 2 MB total.</small>{reading && <p role="status">Reading files…</p>}{values.attachments?.map((file,i) => <div className="attachmentItem" key={`${file.name}-${i}`}><span>{file.name}</span><button type="button" onClick={() => update('attachments',values.attachments.filter((_,index) => index !== i))}>Remove</button></div>)}</div> : <DocumentField key={`${type}-${field.key}`} field={field} value={(field.type === 'calculated' ? payload[field.key] : values[field.key]) ?? ''} managers={managers} onChange={value => update(field.key,value)}/>)}</div>
-      {schema.source?.endsWith('.pdf') && <div className="responseCopy"><label><input type="checkbox" disabled/>Send me a copy of my responses</label><small>Email copies are unavailable in this local version.</small></div>}
       {!allowed && <p className="error">Only KAM / Commercial or System Admin can create requests.</p>}
       {error && <p className="error" role="alert">{error}</p>}
       <div className="actions"><button className="primary" disabled={!allowed || reading || submitting}>{submitting ? 'Saving…' : 'Submit Request'}</button></div>
