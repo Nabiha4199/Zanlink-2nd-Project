@@ -1,7 +1,7 @@
 import React,{useEffect,useState}from'react';
 import DocumentForm from './DocumentForm';
 import {documentFacts} from './requestForms';
-import{LayoutDashboard,FilePlus2,ClipboardList,LogOut,CheckCircle2,Clock3,XCircle,RotateCcw,Users,Wifi,Search}from'lucide-react';
+import{LayoutDashboard,FilePlus2,ClipboardList,LogOut,CheckCircle2,Clock3,XCircle,RotateCcw,Users,Wifi,Search,FileDown,Printer}from'lucide-react';
 
 const USERS=[
  {id:'u-kam',name:'Amina KAM',email:'kam@zanlink.co.tz',password:'demo123',role:'KAM / Commercial'},
@@ -28,11 +28,11 @@ function Dashboard({rows,onOpen,onProgress,setView}) {
   const filteredRows=statusFilter==='All'?rows:rows.filter(row=>row.status===statusFilter);
   return <>
     <header><div><h1>Dashboard</h1><p>Customer account requests and approval workflow</p></div><button className="primary"onClick={()=>setView('new')}>+ New Request</button></header>
-    <div className="cards"><Card t="Total Requests"n={rows.length} I={ClipboardList}/><Card t="SDU & Network"n={count('Pending SDU & Network')} I={Wifi}/><Card t="Commercial"n={count('Pending Head of Commercial')} I={Users}/><Card t="Finance"n={count('Pending Finance')} I={Clock3}/><Card t="Completed"n={count('Completed')} I={CheckCircle2}/></div>
+    <div className="cards"><Card t="Total Requests"n={rows.length} I={ClipboardList}onClick={()=>setStatusFilter('All')}active={statusFilter==='All'}/><Card t="SDU & Network"n={count('Pending SDU & Network')} I={Wifi}onClick={()=>setStatusFilter('Pending SDU & Network')}active={statusFilter==='Pending SDU & Network'}/><Card t="Commercial"n={count('Pending Head of Commercial')} I={Users}onClick={()=>setStatusFilter('Pending Head of Commercial')}active={statusFilter==='Pending Head of Commercial'}/><Card t="Finance"n={count('Pending Finance')} I={Clock3}onClick={()=>setStatusFilter('Pending Finance')}active={statusFilter==='Pending Finance'}/><Card t="Completed"n={count('Completed')} I={CheckCircle2}onClick={()=>setStatusFilter('Completed')}active={statusFilter==='Completed'}/></div>
     <section className="panel"><div className="panelHead dashboardPanelHead"><div><h2>Requests</h2><p>Filter requests by their current workflow status.</p></div><label>Status<select value={statusFilter}onChange={event=>setStatusFilter(event.target.value)}><option>All</option>{statuses.map(status=><option key={status}>{status}</option>)}</select></label></div><RequestTable rows={filteredRows} onOpen={onOpen} onProgress={onProgress}/></section>
   </>;
 }
-function Card({t,n,I}){return <div className="card"><div className="icon"><I size={21}/></div><div><span>{t}</span><strong>{n}</strong></div></div>}
+function Card({t,n,I,onClick,active}){return <button type="button" className={`card dashboardCard${active?' active':''}`} onClick={onClick} aria-pressed={active}><div className="icon"><I size={21}/></div><div className="cardText"><span>{t}</span><strong>{n}</strong></div></button>}
 function RequestTable({rows,onOpen,onProgress}){return <div className="tableWrap"><table><thead><tr><th>Request</th><th>Customer</th><th>Type</th><th>Change</th><th>Status</th><th>Created</th><th>Action</th></tr></thead><tbody>{rows.map(r=><tr key={r.id}onClick={()=>onOpen(r)}><td><b>{r.ref}</b></td><td>{r.customer_name}<small>{r.customer_id||r.service_no||r.radius_username}</small></td><td>{r.request_type}{r.request_type==='Disconnection'&&<small>{r.disconnection_type||'Disconnection type pending'}</small>}</td><td>{['Churn','On Hold','Disconnection'].includes(r.request_type)?`${r.request_type} / ${r.effective_date||'-'}`:`${r.current_capacity||'-'} to ${r.new_capacity||'-'}`}</td><td><Status s={r.status}/></td><td>{r.created_at?.slice(0,10)}</td><td><div className="rowActions"><button className="openBtn"onClick={e=>{e.stopPropagation();onOpen(r)}}>Open</button><button className="progressBtn"onClick={e=>{e.stopPropagation();onProgress(r)}}>Progress</button></div></td></tr>)}{!rows.length&&<tr><td colSpan="7"className="empty">No requests found.</td></tr>}</tbody></table></div>}
 
 function NewRequest({user,onCreated}) {
@@ -45,7 +45,18 @@ function NewRequest({user,onCreated}) {
   }
   return <DocumentForm user={user} managers={USERS.filter(u=>u.role==='KAM / Commercial').map(u=>u.email)} onSubmit={submit}/>;
 }
-function Requests({rows,onOpen,onProgress}){const[q,setQ]=useState('');const filtered=rows.filter(r=>(r.customer_name+r.ref+r.request_type+r.status).toLowerCase().includes(q.toLowerCase()));return <><header><div><h1>Requests</h1><p>Search and follow all customer account changes.</p></div></header><section className="panel"><div className="search"><Search size={18}/><input placeholder="Search customer, request ID, type or status..."value={q}onChange={e=>setQ(e.target.value)}/></div><RequestTable rows={filtered}onOpen={onOpen} onProgress={onProgress}/></section></>}
+function Requests({rows,onOpen,onProgress}) {
+  const [q,setQ]=useState('');
+  const filtered=rows.filter(r=>`${r.customer_name||''} ${r.ref||''} ${r.request_type||''} ${r.status||''}`.toLowerCase().includes(q.toLowerCase()));
+  function exportExcel(){
+    const columns=['Request','Customer','Customer ID / Service No','Type','Change','Status','Created'];
+    const values=filtered.map(r=>[r.ref,r.customer_name,r.customer_id||r.service_no||r.radius_username,r.request_type,['Churn','On Hold','Disconnection'].includes(r.request_type)?`${r.request_type} / ${r.effective_date||'-'}`:`${r.current_capacity||'-'} to ${r.new_capacity||'-'}`,r.status,r.created_at?.slice(0,10)]);
+    const csv=[columns,...values].map(row=>row.map(value=>`"${String(value??'').replaceAll('\"','\"\"')}"`).join(',')).join('\r\n');
+    const blob=new Blob(['\ufeff',csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`ZanLink-Requests-${new Date().toISOString().slice(0,10)}.csv`;link.click();URL.revokeObjectURL(url);
+  }
+  return <div className="requestsPage"><header><div><h1>Requests</h1><p>Search and follow all customer account changes.</p></div></header><section className="panel"><div className="requestToolbar"><div className="search"><Search size={18}/><input placeholder="Search customer, request ID, type or status..."value={q}onChange={e=>setQ(e.target.value)}/></div><div className="requestTools"><button className="exportBtn"onClick={exportExcel}><FileDown size={17}/>Export to Excel</button><button className="printBtn"onClick={()=>window.print()}><Printer size={17}/>Print</button></div></div><RequestTable rows={filtered}onOpen={onOpen} onProgress={onProgress}/></section></div>;
+}
 
 function WorkflowProgress({request,showTitle=true}){const steps=['KAM','Head of SDU & Network','Head of Commercial','Finance','Completed'];const current={'Pending SDU & Network':1,'Pending Head of Commercial':2,'Pending Finance':3,'Completed':4}[request.status]??1;const stopped=['Rejected','Returned'].includes(request.status);return <div className="workflow">{showTitle&&<h3>Workflow Progress</h3>}<div className="workflowSteps">{steps.map((label,i)=>{const done=request.status==='Completed'||i<current;const active=!stopped&&request.status!=='Completed'&&i===current;const state=done?'completed':active?'pending':'notStarted';const Icon=done?CheckCircle2:active?Clock3:null;return <div className={'workflowStep '+state}key={label}><div className="stepTop">{i>0&&<span className={'stepLine '+(done||active?'lineDone':'')}></span>}<span className="stepCircle">{Icon?<Icon size={24}/>:<span></span>}</span></div><b>{label}</b><small>{done?'Completed':active?'Pending':stopped&&i===current?'Stopped':'Not Started'}</small></div>})}</div>{stopped&&<div className="workflowStop">{request.status}</div>}</div>}
 function ProgressModal({request,onClose}){return <div className="modalShade"onClick={onClose}><section className="progressModal"onClick={e=>e.stopPropagation()}><div className="modalHead"><div><h1>Workflow Progress</h1><p>{request.ref} / {request.customer_name} - {request.request_type}</p></div><button className="closeBtn"onClick={onClose}>Close</button></div><WorkflowProgress request={request}showTitle={false}/></section></div>}

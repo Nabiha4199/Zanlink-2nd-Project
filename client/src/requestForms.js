@@ -30,14 +30,14 @@ export const FORM_SCHEMAS = {
     plan('current_capacity','Original Plan'), plan('new_capacity','New Plan'), currency,
     price('current_price','Original Price'), price('new_price','New Price'), manager, field('reason','Reason')
   ]},
-  'Seasonal Upgrade': {title:'Seasonal Upgrade 21', source:'Seasonal Upgrade 21.pdf', fields:[
+  'Seasonal Upgrade': {title:'Seasonal Upgrade', source:'Seasonal Upgrade 21.pdf', fields:[
     month, client, field('client_segment','Client Segmentation','editable-select'), ip('editable-select'), radius,
     field('revenue_type','Revenue type','editable-select'), field('mode_of_service','Mode of service','editable-select'), date('Billing Date'),
     plan('current_capacity','Current Plan'), plan('new_capacity','New Downgrade'), currency,
     price('current_price','Current Price'), price('new_price','Downgrade Price'), manager,
     field('attachments','File Upload','file',false)
   ]},
-  'Seasonal Downgrade': {title:'Seasonal Downgrade 24', source:'Seasonal Downgrade 24.xlsx', spreadsheet:true, fields:[
+  'Seasonal Downgrade': {title:'Seasonal Downgrade', source:'Seasonal Downgrade 24.xlsx', spreadsheet:true, fields:[
     month, client, segment('Client Segmentation',['Enterprise','Retail'],'editable-select'), ip('editable-select'),
     field('service_no','Service No'), revenue('Revenue type',['DIA'],'editable-select'), mode('editable-select'), date('Billing Date'),
     plan('current_capacity','Current Plan'), plan('new_capacity','New Downgrade'), currency,
@@ -49,7 +49,7 @@ export const FORM_SCHEMAS = {
     segment('Category',['Enterprise','Intercompany','Retail']), date('Billing End'), reason, comments,
     currency, price('mrr','MRR'), manager
   ]},
-  'On Hold': {title:'On Hold 20', source:'On Hold 20.pdf', fields:[
+  'On Hold': {title:'On Hold', source:'On Hold 20.pdf', fields:[
     ...common, segment('Segment'), revenue('Revenue Type',['DIA','Local Loop']), date('Billing End'), reason, comments,
     plan('current_capacity','Original Plan'), currency, price('mrr','MRR'), manager
   ]},
